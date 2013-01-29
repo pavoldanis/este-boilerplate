@@ -1,20 +1,38 @@
 module.exports = (grunt) ->
 
-  closureNamespaces = [
+  production = grunt.option 'production'
+
+  appNamespaces = [
     'bower_components/closure-library'
     'bower_components/closure-templates'
     'bower_components/este'
     'client/app/js'
   ]
 
-  closureCoffeeApp = [
+  appStylusFiles = [
+    'bower_components/este/**/*.styl'
+    'client/**/*.styl'
+  ]
+
+  appCoffeeFiles = [
     'bower_components/este/**/*.coffee'
     'client/**/*.coffee'
   ]
 
-  depsPath = 'client/app/js/deps.js'
-  # from closure base.js to root, other paths are derived
-  depsPrefix = '../../../../../'
+  appJsFiles = [
+    'bower_components/este/**/*.js'
+    'client/**/*.js'
+  ]
+
+  appTemplates = [
+    'bower_components/este/**/*.soy'
+    'client/**/*.soy'
+  ]
+
+  appDepsPath = 'client/app/js/deps.js'
+
+  # from closure base.js dir to app root dir
+  appDepsPrefix = '../../../../../'
 
   grunt.initConfig
     # pkg: grunt.file.readJSON('package.json'),
@@ -24,7 +42,7 @@ module.exports = (grunt) ->
     #   client:
     #     src: ['client/**/*.css', 'client/**/*.js']
 
-    # http://www.jshint.com/docs/
+    # http://www.jshint.com/docs
     jshint:
       client:
         options:
@@ -42,10 +60,7 @@ module.exports = (grunt) ->
           'include css': true
         files: [
           expand: true
-          src: [
-            'bower_components/este/**/*.styl'
-            'client/**/*.styl'
-          ]
+          src: appStylusFiles
           ext: '.css'
         ]
 
@@ -55,10 +70,7 @@ module.exports = (grunt) ->
     #   app:
     #     files: [
     #       expand: true
-    #       src: [
-    #         'bower_components/este/**/*.coffee'
-    #         'client/**/*.coffee'
-    #       ]
+    #       src: appCoffeeFiles
     #       ext: '.js'
     #     ]
 
@@ -68,7 +80,7 @@ module.exports = (grunt) ->
       app:
         files: [
           expand: true
-          src: closureCoffeeApp
+          src: appCoffeeFiles
           ext: '.js'
         ]
 
@@ -76,26 +88,23 @@ module.exports = (grunt) ->
       options:
         soyToJsJarPath: 'bower_components/closure-templates/SoyToJsSrcCompiler.jar'
       app:
-        src: [
-          'bower_components/este/**/*.soy'
-          'client/**/*.soy'
-        ]
+        src: appTemplates
 
     closureDeps:
       options:
         depsWriterPath: 'bower_components/closure-library/closure/bin/build/depswriter.py'
       app:
         options:
-          output_file: depsPath
-          prefix: depsPrefix
-          root: closureNamespaces
+          output_file: appDepsPath
+          prefix: appDepsPrefix
+          root: appNamespaces
 
     closureBuilder:
       options:
         closureBuilderPath: 'bower_components/closure-library/closure/bin/build/closurebuilder.py'
       app:
         options:
-          root: closureNamespaces
+          root: appNamespaces
           namespace: 'app.start'
           output_file: 'client/app/app.js'
           output_mode: 'compiled'
@@ -110,8 +119,8 @@ module.exports = (grunt) ->
     closureUnitTests:
       options:
         basePath: 'bower_components/closure-library/closure/goog/base.js'
-        depsPath: depsPath
-        prefix: depsPrefix
+        depsPath: appDepsPath
+        prefix: appDepsPrefix
       app:
         src: [
           'bower_components/este/**/*_test.js'
@@ -124,36 +133,35 @@ module.exports = (grunt) ->
           port: 8000
           keepalive: true
 
-    # TODO: write better watch, update just changed file
-    #       consider own watch task from old este
+    # not ideal, but https://github.com/gruntjs/grunt/issues/581#issuecomment-12615946
     watch:
       stylus:
-        files: 'client/**/*.styl'
+        files: appStylusFiles
         tasks: 'stylus'
 
       js:
-        files: [
-          'client/**/*.js'
+        files: appJsFiles.concat [
           '!client/app/js/deps.js'
           '!client/app/app.js'
         ]
-        tasks: [
+        tasks: if production then [
           'jshint'
           'closureDeps'
           'closureUnitTests'
-          # add as grunt fok:production or something else
-          # 'closureBuilder'
+          'closureBuilder'
+        ]
+        else [
+          'jshint'
+          'closureDeps'
+          'closureUnitTests'
         ]
 
       coffee:
-        files: closureCoffeeApp
+        files: appCoffeeFiles
         tasks: 'closureCoffee'
 
       closureTemplates:
-        files: [
-          'bower_components/este/**/*.soy'
-          'client/**/*.soy'
-        ]
+        files: appTemplates
         tasks: 'closureTemplates'
 
   grunt.loadNpmTasks 'grunt-contrib-clean'
@@ -164,13 +172,24 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks 'grunt-contrib-watch'
   grunt.loadNpmTasks 'grunt-este-closure'
 
-  grunt.registerTask 'default', [
-    # 'clean', deletes _test
-    'jshint'
-    'stylus'
-    'closureCoffee'
-    'closureTemplates'
-    'closureDeps'
-    # todo: add builder as cmd options
-    'watch',
-  ]
+  if production
+    grunt.registerTask 'default', [
+      'jshint'
+      'stylus'
+      'closureCoffee'
+      'closureTemplates'
+      'closureDeps'
+      'closureUnitTests'
+      'closureBuilder'
+      'watch'
+    ]
+  else
+    grunt.registerTask 'default', [
+      'jshint'
+      'stylus'
+      'closureCoffee'
+      'closureTemplates'
+      'closureDeps'
+      'closureUnitTests'
+      'watch'
+    ]
