@@ -1,8 +1,10 @@
 module.exports = (grunt) ->
 
-  production = grunt.option 'production'
+  # grunt --production
 
-  appNamespaces = [
+  # TODO: appStylusFiles to clientStylusFiles or stylusFiles?
+
+  appDirs = [
     'bower_components/closure-library'
     'bower_components/closure-templates'
     'bower_components/este'
@@ -31,6 +33,8 @@ module.exports = (grunt) ->
 
   appDepsPath = 'client/app/js/deps.js'
 
+  appCompiledOutputPath = 'client/app/js/app.js'
+
   # from closure base.js dir to app root dir
   appDepsPrefix = '../../../../../'
 
@@ -42,15 +46,13 @@ module.exports = (grunt) ->
     #   client:
     #     src: ['client/**/*.css', 'client/**/*.js']
 
-    # http://www.jshint.com/docs
     jshint:
-      client:
+      gruntEsteClosure:
+        # http://www.jshint.com/docs
         options:
           # we need it for closureTests
           evil: true
         src: [
-          'client/app/**/*.js'
-          '!client/app/app.js'
           'node_modules/grunt-este-closure/tasks/**/*.js'
         ]
 
@@ -97,21 +99,21 @@ module.exports = (grunt) ->
         options:
           output_file: appDepsPath
           prefix: appDepsPrefix
-          root: appNamespaces
+          root: appDirs
 
     closureBuilder:
       options:
         closureBuilderPath: 'bower_components/closure-library/closure/bin/build/closurebuilder.py'
       app:
         options:
-          root: appNamespaces
+          root: appDirs
           namespace: 'app.start'
-          output_file: 'client/app/app.js'
+          output_file: appCompiledOutputPath
           output_mode: 'compiled'
+          depsPath: appDepsPath
           compiler_jar: 'bower_components/closure-compiler/compiler.jar'
           compiler_flags: [
             '--output_wrapper="(function(){%output%})();"'
-            '--js="client/app/js/deps.js"'
             '--compilation_level="ADVANCED_OPTIMIZATIONS"'
             '--warning_level="VERBOSE"'
           ]
@@ -141,17 +143,15 @@ module.exports = (grunt) ->
 
       js:
         files: appJsFiles.concat [
-          '!client/app/js/deps.js'
-          '!client/app/app.js'
+          '!' + appDepsPath
+          '!' + appCompiledOutputPath
         ]
-        tasks: if production then [
-          'jshint'
+        tasks: if grunt.option 'production' then [
           'closureDeps'
           'closureUnitTests'
           'closureBuilder'
         ]
         else [
-          'jshint'
           'closureDeps'
           'closureUnitTests'
         ]
@@ -172,9 +172,8 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks 'grunt-contrib-watch'
   grunt.loadNpmTasks 'grunt-este-closure'
 
-  if production
+  if grunt.option 'production'
     grunt.registerTask 'default', [
-      'jshint'
       'stylus'
       'closureCoffee'
       'closureTemplates'
@@ -185,7 +184,6 @@ module.exports = (grunt) ->
     ]
   else
     grunt.registerTask 'default', [
-      'jshint'
       'stylus'
       'closureCoffee'
       'closureTemplates'
