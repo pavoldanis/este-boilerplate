@@ -1,9 +1,9 @@
 {
-  "name": "todo",
+  "name": "este-boilerplate",
   "private": true,
   "version": "0.0.1",
   "dependencies": {
-    "express": "3.0.x"
+    "express": "*"
   },
   "devDependencies": {
     "grunt": "git://github.com/gruntjs/grunt.git",
