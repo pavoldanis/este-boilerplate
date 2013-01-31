@@ -29,27 +29,29 @@ module.exports = (grunt) ->
 
   appStylusFiles = [
     'bower_components/este/**/*.styl'
-    'client/**/*.styl'
+    'client/app/css/**/*.styl'
   ]
 
   appCoffeeFiles = [
     'bower_components/este/**/*.coffee'
-    'client/**/*.coffee'
+    'client/app/js/**/*.coffee'
   ]
 
   appJsFiles = [
     'bower_components/este/**/*.js'
-    'client/**/*.js'
+    'client/app/js/**/*.js'
   ]
 
   appTemplates = [
     'bower_components/este/**/*.soy'
-    'client/**/*.soy'
+    'client/app/js/**/*.soy'
   ]
 
-  appDepsPath = 'client/app/js/deps.js'
+  appDepsPath =
+    'client/app/assets/deps.js'
 
-  appCompiledOutputPath = 'client/app/js/app.js'
+  appCompiledOutputPath =
+    'client/app/assets/app.js'
 
   # from closure base.js dir to app root dir
   appDepsPrefix = '../../../../../'
@@ -57,19 +59,20 @@ module.exports = (grunt) ->
   grunt.initConfig
     # pkg: grunt.file.readJSON('package.json')
 
+    # TODO:
     # clean:
     #   client:
     #     src: ['client/**/*.css', 'client/**/*.js']
 
-    # jshint:
-    #   gruntEsteClosure:
-    #     # http://www.jshint.com/docs
-    #     options:
-    #       # we need it for closureTests
-    #       evil: true
-    #     src: [
-    #       'node_modules/grunt-este-closure/tasks/**/*.js'
-    #     ]
+    jshint:
+      gruntEsteClosure:
+        # http://www.jshint.com/docs
+        options:
+          # we need it for closureTests
+          evil: true
+        src: [
+          'node_modules/grunt-este-closure/tasks/**/*.js'
+        ]
 
     stylus:
       options:
@@ -81,16 +84,7 @@ module.exports = (grunt) ->
           ext: '.css'
         ]
 
-    # coffee:
-    #   options:
-    #     bare: false
-    #   app:
-    #     files: [
-    #       expand: true
-    #       src: appCoffeeFiles
-    #       ext: '.js'
-    #     ]
-
+    # same params as grunt-contrib-coffee
     closureCoffee:
       options:
         bare: true
@@ -161,40 +155,31 @@ module.exports = (grunt) ->
           port: 8000
           keepalive: true
 
-    # not ideal, but https://github.com/gruntjs/grunt/issues/581#issuecomment-12615946
-    # wait for update or rewrite it for multiple tasks etc.
-    watch:
-      stylus:
-        files: appStylusFiles
-        tasks: 'stylus:app'
+    closureWatch:
+      app:
+        stylus:
+          files: appStylusFiles
+          tasks: 'stylus:app'
 
-      js:
-        files: appJsFiles.concat [
-          '!' + appDepsPath
-          '!' + appCompiledOutputPath
-        ]
-        tasks: if grunt.option('stage') then [
-          'closureDeps:app'
-          'closureUnitTests:app'
-          'closureBuilder:app'
-        ]
-        else [
-          'closureDeps:app'
-          'closureUnitTests:app'
-        ]
+        js:
+          files: appJsFiles
+          tasks: if grunt.option('stage') then [
+            'closureDeps:app'
+            'closureUnitTests:app'
+            'closureBuilder:app'
+          ]
+          else [
+            'closureDeps:app'
+            'closureUnitTests:app'
+          ]
 
-      coffee:
-        files: appCoffeeFiles
-        tasks: 'closureCoffee:app'
+        coffee:
+          files: appCoffeeFiles
+          tasks: 'closureCoffee:app'
 
-      closureTemplates:
-        files: appTemplates
-        tasks: 'closureTemplates:app'
-
-    # TODO:
-    # closureWatch:
-    #   app:
-    #     coffee:
+        closureTemplates:
+          files: appTemplates
+          tasks: 'closureTemplates:app'
 
   grunt.loadNpmTasks 'grunt-contrib-clean'
   grunt.loadNpmTasks 'grunt-contrib-coffee'
@@ -213,7 +198,8 @@ module.exports = (grunt) ->
       "closureUnitTests:#{app}"
     ]
     tasks.push "closureBuilder:#{app}" if grunt.option 'stage'
-    tasks.push 'watch'
+    tasks.push 'closureWatch'
+
     grunt.task.run tasks
 
   grunt.registerTask 'default', 'run:app'
