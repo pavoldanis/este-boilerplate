@@ -14,6 +14,9 @@ module.exports = (grunt) ->
       grunt run:app --stage=debug
 
     Default task runs grunt run:app.
+      grunt
+      grunt --stage
+      grunt --stage=debug
 
   ###
 
@@ -187,6 +190,11 @@ module.exports = (grunt) ->
       closureTemplates:
         files: appTemplates
         tasks: 'closureTemplates:app'
+
+    # TODO:
+    # closureWatch:
+    #   app:
+    #     coffee:
 
   grunt.loadNpmTasks 'grunt-contrib-clean'
   grunt.loadNpmTasks 'grunt-contrib-coffee'
