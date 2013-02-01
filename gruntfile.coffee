@@ -23,27 +23,27 @@ module.exports = (grunt) ->
   appDirs = [
     'bower_components/closure-library'
     'bower_components/closure-templates'
-    'bower_components/este'
+    'bower_components/este-library'
     'client/app/js'
   ]
 
   appStylusFiles = [
-    'bower_components/este/**/*.styl'
+    'bower_components/este-library/**/*.styl'
     'client/app/css/**/*.styl'
   ]
 
   appCoffeeFiles = [
-    'bower_components/este/**/*.coffee'
+    'bower_components/este-library/**/*.coffee'
     'client/app/js/**/*.coffee'
   ]
 
   appJsFiles = [
-    'bower_components/este/**/*.js'
+    'bower_components/este-library/**/*.js'
     'client/app/js/**/*.js'
   ]
 
   appTemplates = [
-    'bower_components/este/**/*.soy'
+    'bower_components/este-library/**/*.soy'
     'client/app/js/**/*.soy'
   ]
 
@@ -54,7 +54,7 @@ module.exports = (grunt) ->
     'client/app/assets/app.js'
 
   # from closure base.js dir to app root dir
-  appDepsPrefix = '../../../../../'
+  appDepsPrefix = '../../../../'
 
   grunt.initConfig
     # pkg: grunt.file.readJSON('package.json')
@@ -111,6 +111,15 @@ module.exports = (grunt) ->
           output_file: appDepsPath
           prefix: appDepsPrefix
           root: appDirs
+      este:
+        options:
+          output_file: 'bower_components/este-library/deps.js'
+          prefix: '../../../../'
+          root: [
+            'bower_components/este-library'
+            'bower_components/closure-library'
+            'bower_components/closure-templates'
+          ]
 
     esteBuilder:
       options:
@@ -146,7 +155,7 @@ module.exports = (grunt) ->
           depsPath: appDepsPath
           prefix: appDepsPrefix
         src: [
-          'bower_components/este/**/*_test.js'
+          'bower_components/este-library/**/*_test.js'
           'client/**/*_test.js'
         ]
 
@@ -195,10 +204,12 @@ module.exports = (grunt) ->
       "esteStylus:#{app}"
       "esteCoffee:#{app}"
       "esteTemplates:#{app}"
+      "esteDeps:este"
       "esteDeps:#{app}"
       "esteUnitTests:#{app}"
     ]
-    tasks.push "esteBuilder:#{app}" if grunt.option 'stage'
+    if grunt.option 'stage'
+      tasks.push "esteBuilder:#{app}"
     tasks.push 'esteWatch'
 
     grunt.task.run tasks
