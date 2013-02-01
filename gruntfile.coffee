@@ -74,7 +74,8 @@ module.exports = (grunt) ->
           'node_modules/grunt-este-closure/tasks/**/*.js'
         ]
 
-    stylus:
+    # same params as grunt-contrib-stylus
+    esteStylus:
       options:
         'include css': true
       app:
@@ -85,7 +86,7 @@ module.exports = (grunt) ->
         ]
 
     # same params as grunt-contrib-coffee
-    closureCoffee:
+    esteCoffee:
       options:
         bare: true
       app:
@@ -95,13 +96,13 @@ module.exports = (grunt) ->
           ext: '.js'
         ]
 
-    closureTemplates:
+    esteTemplates:
       options:
         soyToJsJarPath: 'bower_components/closure-templates/SoyToJsSrcCompiler.jar'
       app:
         src: appTemplates
 
-    closureDeps:
+    esteDeps:
       options:
         depsWriterPath: 'bower_components/closure-library/closure/bin/build/depswriter.py'
       app:
@@ -111,7 +112,7 @@ module.exports = (grunt) ->
           prefix: appDepsPrefix
           root: appDirs
 
-    closureBuilder:
+    esteBuilder:
       options:
         closureBuilderPath: 'bower_components/closure-library/closure/bin/build/closurebuilder.py'
         compiler_jar: 'bower_components/closure-compiler/compiler.jar'
@@ -137,7 +138,7 @@ module.exports = (grunt) ->
           output_file: appCompiledOutputPath
           depsPath: appDepsPath
 
-    closureUnitTests:
+    esteUnitTests:
       options:
         basePath: 'bower_components/closure-library/closure/goog/base.js'
       app:
@@ -155,31 +156,31 @@ module.exports = (grunt) ->
           port: 8000
           keepalive: true
 
-    closureWatch:
+    esteWatch:
       app:
-        stylus:
+        styl:
           files: appStylusFiles
-          tasks: 'stylus:app'
+          tasks: 'esteStylus:app'
 
         js:
           files: appJsFiles
           tasks: if grunt.option('stage') then [
-            'closureDeps:app'
-            'closureUnitTests:app'
-            'closureBuilder:app'
+            'esteDeps:app'
+            'esteUnitTests:app'
+            'esteBuilder:app'
           ]
           else [
-            'closureDeps:app'
-            'closureUnitTests:app'
+            'esteDeps:app'
+            'esteUnitTests:app'
           ]
 
         coffee:
           files: appCoffeeFiles
-          tasks: 'closureCoffee:app'
+          tasks: 'esteCoffee:app'
 
-        closureTemplates:
+        soy:
           files: appTemplates
-          tasks: 'closureTemplates:app'
+          tasks: 'esteTemplates:app'
 
   grunt.loadNpmTasks 'grunt-contrib-clean'
   grunt.loadNpmTasks 'grunt-contrib-coffee'
@@ -191,14 +192,14 @@ module.exports = (grunt) ->
 
   grunt.registerTask 'run', 'To start development.', (app) ->
     tasks = [
-      "stylus:#{app}"
-      "closureCoffee:#{app}"
-      "closureTemplates:#{app}"
-      "closureDeps:#{app}"
-      "closureUnitTests:#{app}"
+      "esteStylus:#{app}"
+      "esteCoffee:#{app}"
+      "esteTemplates:#{app}"
+      "esteDeps:#{app}"
+      "esteUnitTests:#{app}"
     ]
-    tasks.push "closureBuilder:#{app}" if grunt.option 'stage'
-    tasks.push 'closureWatch'
+    tasks.push "esteBuilder:#{app}" if grunt.option 'stage'
+    tasks.push 'esteWatch'
 
     grunt.task.run tasks
 
