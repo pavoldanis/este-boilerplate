@@ -65,13 +65,13 @@ module.exports = (grunt) ->
     #     src: ['client/**/*.css', 'client/**/*.js']
 
     jshint:
-      gruntEsteClosure:
+      gruntEste:
         # http://www.jshint.com/docs
         options:
           # we need it for closureTests
           evil: true
         src: [
-          'node_modules/grunt-este-closure/tasks/**/*.js'
+          'node_modules/grunt-este/tasks/**/*.js'
         ]
 
     # same params as grunt-contrib-stylus
@@ -188,7 +188,7 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks 'grunt-contrib-jshint'
   grunt.loadNpmTasks 'grunt-contrib-stylus'
   grunt.loadNpmTasks 'grunt-contrib-watch'
-  grunt.loadNpmTasks 'grunt-este-closure'
+  grunt.loadNpmTasks 'grunt-este'
 
   grunt.registerTask 'run', 'To start development.', (app) ->
     tasks = [
