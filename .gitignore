@@ -5,14 +5,3 @@ este-boilerplate.sublime-workspace
 
 bower_components/
 node_modules/
-
-# TODO:
-#*.js
-#*.css
-#assets/js-build
-#assets/js/google-closure/closure/bin/build/__pycache__
-#assets/js/dev/mocha.opts
-#!assets/js/dev/soyutils_usegoog.js
-#!assets/js/dev/run.js
-#!assets/js/dev/tests.js
-#app.html

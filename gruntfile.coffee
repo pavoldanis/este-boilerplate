@@ -68,7 +68,7 @@ module.exports = (grunt) ->
       gruntEste:
         # http://www.jshint.com/docs
         options:
-          # we need it for closureTests
+          # we need it for esteUnitTests
           evil: true
         src: [
           'node_modules/grunt-este/tasks/**/*.js'
