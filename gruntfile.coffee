@@ -59,21 +59,6 @@ module.exports = (grunt) ->
   grunt.initConfig
     # pkg: grunt.file.readJSON('package.json')
 
-    # TODO:
-    # clean:
-    #   client:
-    #     src: ['client/**/*.css', 'client/**/*.js']
-
-    jshint:
-      gruntEste:
-        # http://www.jshint.com/docs
-        options:
-          # we need it for esteUnitTests
-          evil: true
-        src: [
-          'node_modules/grunt-este/tasks/**/*.js'
-        ]
-
     # same params as grunt-contrib-stylus
     esteStylus:
       options:
@@ -190,6 +175,22 @@ module.exports = (grunt) ->
         soy:
           files: appTemplates
           tasks: 'esteTemplates:app'
+
+    # TODO:
+    # clean:
+    #   client:
+    #     src: ['client/**/*.css', 'client/**/*.js']
+
+    # jshint:
+    #   gruntEste:
+    #     # http://www.jshint.com/docs
+    #     options:
+    #       # we need it for esteUnitTests
+    #       evil: true
+    #       loopfunc: true
+    #     src: [
+    #       'node_modules/grunt-este/tasks/**/*.js'
+    #     ]
 
   grunt.loadNpmTasks 'grunt-contrib-clean'
   grunt.loadNpmTasks 'grunt-contrib-coffee'
