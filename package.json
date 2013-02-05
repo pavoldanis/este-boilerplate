@@ -13,7 +13,6 @@
     "grunt-contrib-jshint": "git://github.com/gruntjs/grunt-contrib-jshint.git",
     "grunt-contrib-clean": "git://github.com/gruntjs/grunt-contrib-clean.git",
     "grunt-contrib-connect": "git://github.com/gruntjs/grunt-contrib-connect.git",
-    "grunt-este": "git://github.com/Steida/grunt-este.git",
-    "phantomjs": "~1.8.0-1"
+    "grunt-este": "git://github.com/Steida/grunt-este.git"
   }
 }
