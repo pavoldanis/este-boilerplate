@@ -18,6 +18,9 @@ module.exports = (grunt) ->
       grunt --stage
       grunt --stage=debug
 
+    No color means no friendly beeps too.
+      grunt --no-color
+
   ###
 
   appDirs = [
@@ -109,10 +112,9 @@ module.exports = (grunt) ->
     esteBuilder:
       options:
         closureBuilderPath: 'bower_components/closure-library/closure/bin/build/closurebuilder.py'
-        compiler_jar: 'bower_components/closure-compiler/compiler.jar'
+        compilerPath: 'bower_components/closure-compiler/compiler.jar'
         namespace: 'app.start'
-        output_mode: 'compiled'
-        compiler_flags: if grunt.option('stage') == 'debug' then [
+        compilerFlags: if grunt.option('stage') == 'debug' then [
           '--output_wrapper="(function(){%output%})();"'
           '--compilation_level="ADVANCED_OPTIMIZATIONS"'
           '--warning_level="VERBOSE"'
@@ -129,7 +131,7 @@ module.exports = (grunt) ->
       app:
         options:
           root: appDirs
-          output_file: appCompiledOutputPath
+          outputFilePath: appCompiledOutputPath
           depsPath: appDepsPath
 
     esteUnitTests:
@@ -177,6 +179,7 @@ module.exports = (grunt) ->
           tasks: 'esteTemplates:app'
 
     # TODO:
+
     # clean:
     #   client:
     #     src: ['client/**/*.css', 'client/**/*.js']
@@ -185,9 +188,9 @@ module.exports = (grunt) ->
     #   gruntEste:
     #     # http://www.jshint.com/docs
     #     options:
-    #       # we need it for esteUnitTests
-    #       evil: true
-    #       loopfunc: true
+    #       evil: true        # we need it for esteUnitTests
+    #       loopfunc: true    # it's ok
+    #       laxcomma: true    # to allow tjholowaychuk code style
     #     src: [
     #       'node_modules/grunt-este/tasks/**/*.js'
     #     ]
